@@ -1,6 +1,6 @@
 # E-Commerce Mobile Application & Backend
 
-A full-stack mobile e-commerce application developed as a university final project for Mobile Application 2. The project features a high-performance **FastAPI (Python)** backend utilizing SQLAlchemy and an asynchronous-ready architecture, paired with a modern **Flutter** frontend powered by **GetX** for reactive state management and clean modular routing.
+Mobile e-commerce application developed as a university final project for Mobile Application 2. The project features a high-performance **FastAPI (Python)** backend utilizing SQLAlchemy and an asynchronous-ready architecture, paired with a modern **Flutter** frontend powered by **GetX** for reactive state management and clean modular routing.
 
 ---
 
