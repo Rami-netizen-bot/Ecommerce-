@@ -15,3 +15,4 @@ class BannerModel {
     this.backgroundColor = const Color(0xFFE8F1FC),
   });
 }
+

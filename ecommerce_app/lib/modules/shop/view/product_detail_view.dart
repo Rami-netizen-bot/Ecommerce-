@@ -152,50 +152,60 @@ class _ProductDetailViewState extends State<ProductDetailView>
                   const Spacer(),
 
                   // Explicit Animated Add to Cart Button
-                  GestureDetector(
-                    onTapDown: (_) => _controller.forward(),
-                    onTapUp: (_) {
-                      _controller.reverse();
-                      cartController.addToCart(
-                        product,
-                        quantity: quantity.value,
-                      );
-                      Get.snackbar(
-                        'Success',
-                        'Added ${quantity.value} item(s) to cart',
-                        snackPosition: SnackPosition.BOTTOM,
-                      );
-                    },
-                    onTapCancel: () => _controller.reverse(),
-                    child: AnimatedBuilder(
-                      animation: _controller,
-                      builder: (context, child) {
-                        return Transform.scale(
-                          scale: 1.0 - _controller.value,
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.indigo,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                  Container(
+                    padding: EdgeInsets.all(16.0),
+                    // color: Colors.pinkAccent,
+                    child: GestureDetector(
+                      onTapDown: (_) => _controller.forward(),
+                      onTapUp: (_) {
+                        _controller.reverse();
+                        cartController.addToCart(
+                          product,
+                          quantity: quantity.value,
+                        );
+                        // Get.snackbar(
+                        //   'Success',
+                        //   'Added ${quantity.value} item(s) to cart',
+                        //   snackPosition: SnackPosition.BOTTOM,
+                        //   // backgroundColor: Colors.green
+                        // );
+                      },
+                      onTapCancel: () => _controller.reverse(),
+                      child: AnimatedBuilder(
+                        animation: _controller,
+                        builder: (context, child) {
+                          return Transform.scale(
+                            scale: 1.0 - _controller.value,
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.indigo,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                 ),
-                              ),
-                              onPressed: null,
-                              child: const Text(
-                                'Add to Cart',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                onPressed: () {
+                                  cartController.addToCart(
+                                    product,
+                                    quantity: quantity.value,
+                                  );
+                                },
+                                child: const Text(
+                                  'Add to Cart',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ],

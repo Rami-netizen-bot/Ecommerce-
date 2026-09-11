@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List
 from pydantic import BaseModel
 
@@ -28,11 +28,29 @@ class OrderCreate(BaseModel):
     total_price: float
     items: List[OrderItemCreate]
 
+class ProductInOrder(BaseModel):
+    id: int
+    title: str
+    price: float
+    image_url: str | None = None
+
+    class Config:
+        from_attributes = True
+
+class OrderItemOut(BaseModel):
+    id: int
+    quantity: int
+    product: ProductInOrder | None = None
+
+    class Config:
+        from_attributes = True
+
 class OrderOut(BaseModel):
     id: int
     user_id: int
     total_price: float
     status: str   
+    items: List[OrderItemOut] = []
 
     class Config:
         from_attributes = True
@@ -125,9 +143,26 @@ def create_order(order_data: OrderCreate, db: Session = Depends(get_db)):
         db.add(db_item)
     
     db.commit()
+
+    # Eagerly load items and nested products so OrderOut serializes them correctly
+    db_order = (
+        db.query(models.Order)
+        .options(
+            joinedload(models.Order.items).joinedload(models.OrderItem.product)
+        )
+        .filter(models.Order.id == db_order.id)
+        .first()
+    )
     return db_order
 
-@app.get("/orders/{user_id}")
+@app.get("/orders/{user_id}", response_model=List[OrderOut])
 def get_user_orders(user_id: int, db: Session = Depends(get_db)):
-    orders = db.query(models.Order).filter(models.Order.user_id == user_id).all()
+    orders = (
+        db.query(models.Order)
+        .options(
+            joinedload(models.Order.items).joinedload(models.OrderItem.product)
+        )
+        .filter(models.Order.user_id == user_id)
+        .all()
+    )
     return orders

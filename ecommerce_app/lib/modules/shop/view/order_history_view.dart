@@ -29,6 +29,10 @@ class OrderHistoryView extends StatelessWidget {
           itemCount: orderController.orders.length,
           itemBuilder: (context, index) {
             final order = orderController.orders[index];
+            
+            // Calculate total quantity of items
+            int totalItemsCount = order.items.fold(0, (sum, item) => sum + item.quantity);
+
             return Card(
               elevation: 2,
               margin: const EdgeInsets.only(bottom: 12),
@@ -55,7 +59,32 @@ class OrderHistoryView extends StatelessWidget {
                       ],
                     ),
                     const Divider(),
-                    Text('Total Items: ${order.items.length}', style: const TextStyle(color: Colors.grey)),
+                    
+                    // Display each product title, quantity, and price dynamically
+                    ...order.items.map((item) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              '• ${item.product?.title ?? "Product"} (x${item.quantity})',
+                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                          Text(
+                            '\$${((item.product?.price ?? 0.0) * item.quantity).toStringAsFixed(2)}',
+                            style: const TextStyle(fontSize: 14, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    )),
+                    
+                    const Divider(),
+                    Text(
+                      'Total Items: $totalItemsCount', 
+                      style: const TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
                     const SizedBox(height: 4),
                     Text(
                       'Total Price: \$${order.totalPrice.toStringAsFixed(2)}',
