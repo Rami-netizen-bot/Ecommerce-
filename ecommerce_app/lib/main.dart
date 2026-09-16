@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import './modules/shop/view/shop_view.dart';
 import './modules/shop/controllers/shop_controllers.dart';
 import './modules/shop/controllers/card_controller.dart';
+import './modules/shop/view/login_view.dart';
 
 void main() {
   Get.put(ShopController());
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
       ),
-      home: const ShopView(),
+      home:  LoginView(),
       debugShowCheckedModeBanner: false,
     );
   }

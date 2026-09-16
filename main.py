@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 from app.database import engine, Base, get_db
 from app import models
@@ -12,6 +12,15 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="E-Commerce API", version="1.0.0")
 
 # --- Pydantic Schemas for Requests/Responses ---
+class UserCreate(BaseModel):
+    username: str
+    email: str
+    password: str
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
 class ProductCreate(BaseModel):
     title: str
     description: str | None = None
@@ -71,12 +80,42 @@ class ProductOut(BaseModel):
 def read_root():
     return {"message": "Welcome to the E-Commerce FastAPI Backend!"}
 
+# --- Authentication Endpoints ---
+@app.post("/auth/register")
+def register_user(user: UserCreate, db: Session = Depends(get_db)):
+    existing_user = db.query(models.User).filter(
+        (models.User.email == user.email) | (models.User.username == user.username)
+    ).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email or username already registered")
+    
+    db_user = models.User(
+        username=user.username,
+        email=user.email,
+        hashed_password=user.password  # Note: Plain text for simplicity, hash in production
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return {"message": "User registered successfully", "user_id": db_user.id}
+
+@app.post("/auth/login")
+def login_user(credentials: UserLogin, db: Session = Depends(get_db)):
+    db_user = db.query(models.User).filter(models.User.email == credentials.email).first()
+    if not db_user or db_user.hashed_password != credentials.password:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    return {"message": "Login successful", "user_id": db_user.id, "username": db_user.username}
+
+# --- Product Endpoints ---
 @app.get("/products/", response_model=List[ProductOut])
-def get_products(category: str | None = None, db: Session = Depends(get_db)):
+def get_products(skip: int = 0, limit: int = 10, category: str | None = None, db: Session = Depends(get_db)):
     query = db.query(models.Product)
     if category and category != "All":
         query = query.filter(models.Product.category == category)
-    return query.all()
+    
+    products = query.offset(skip).limit(limit).all()
+    return products
 
 @app.delete("/products/{product_id}")
 def delete_product(product_id: int, db: Session = Depends(get_db)):
@@ -123,6 +162,7 @@ def update_product(product_id: int, product_data: ProductUpdate, db: Session = D
     db.refresh(db_product)
     return db_product
 
+# --- Order Endpoints ---
 @app.post("/orders/", response_model=OrderOut)
 def create_order(order_data: OrderCreate, db: Session = Depends(get_db)):
     db_order = models.Order(

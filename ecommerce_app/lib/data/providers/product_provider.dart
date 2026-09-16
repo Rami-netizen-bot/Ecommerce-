@@ -10,11 +10,19 @@ class ProductProvider {
     ),
   );
 
-  Future<List<Product>> fetchProducts({String? category}) async {
+  Future<List<Product>> fetchProducts({int skip = 0, int limit = 10, String? category}) async {
     try {
+      final Map<String, dynamic> queryParams = {
+        'skip': skip,
+        'limit': limit,
+      };
+      if (category != null) {
+        queryParams['category'] = category;
+      }
+
       final response = await _dio.get(
         '/products',
-        queryParameters: category != null ? {'category': category} : null,
+        queryParameters: queryParams,
       );
       List<dynamic> data = response.data;
       return data.map((json) => Product.fromJson(json)).toList();
@@ -23,18 +31,18 @@ class ProductProvider {
     }
   }
 
- Future<void> createProduct(Map<String, dynamic> productData) async {
-  try {
-    final response = await _dio.post(
-      '/products/', // Added trailing slash here
-      data: productData,
-    );
+  Future<void> createProduct(Map<String, dynamic> productData) async {
+    try {
+      final response = await _dio.post(
+        '/products/',
+        data: productData,
+      );
 
-    if (response.statusCode != 200 && response.statusCode != 201) {
-      throw Exception('Failed to save product on backend');
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('Failed to save product on backend');
+      }
+    } catch (e) {
+      throw Exception('Failed to create product: $e');
     }
-  } catch (e) {
-    throw Exception('Failed to create product: $e');
   }
-}
 }

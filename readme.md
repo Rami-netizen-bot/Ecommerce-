@@ -87,3 +87,8 @@ flutter run
 | **GET** | `/` | Root verification check |
 | **GET** | `/products/` | Retrieve product catalog (supports category filtering) |
 | **POST** | `/products/` | Add a new product to the database |
+
+
+
+
+

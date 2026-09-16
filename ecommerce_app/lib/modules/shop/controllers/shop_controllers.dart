@@ -6,9 +6,14 @@ class ShopController extends GetxController {
   final ProductProvider _provider = ProductProvider();
 
   var isLoading = true.obs;
+  var isLoadingMore = false.obs;
   var productList = <Product>[].obs;
   var selectedCategory = 'All'.obs;
   var searchQuery = ''.obs;
+
+  int skip = 0;
+  final int limit = 10;
+  var hasMore = true.obs;
 
   // Dynamically extract unique categories from products, ensuring 'All' is always first
   List<String> get categories {
@@ -25,23 +30,70 @@ class ShopController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchProducts();
+    fetchProducts(isRefresh: true);
   }
 
   void changeCategory(String category) {
     selectedCategory.value = category;
-    fetchProducts(category: category == 'All' ? null : category);
+    skip = 0;
+    hasMore.value = true;
+    fetchProducts(category: category == 'All' ? null : category, isRefresh: true);
   }
 
-  void fetchProducts({String? category}) async {
+  void fetchProducts({String? category, bool isRefresh = false}) async {
     try {
-      isLoading(true);
-      var products = await _provider.fetchProducts(category: category == 'All' ? null : category);
-      productList.value = products;
+      if (isRefresh) {
+        skip = 0;
+        hasMore.value = true;
+        isLoading(true);
+      }
+
+      var products = await _provider.fetchProducts(
+        skip: skip,
+        limit: limit,
+        category: category,
+      );
+
+      if (products.length < limit) {
+        hasMore.value = false;
+      }
+
+      if (isRefresh) {
+        productList.value = products;
+      } else {
+        productList.assignAll(products);
+      }
     } catch (e) {
       Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
     } finally {
-      isLoading(false);
+      if (isRefresh) {
+        isLoading(false);
+      }
+    }
+  }
+
+  void loadMoreProducts() async {
+    if (isLoadingMore.value || !hasMore.value) return;
+    isLoadingMore.value = true;
+
+    try {
+      skip += limit;
+      var moreProducts = await _provider.fetchProducts(
+        skip: skip,
+        limit: limit,
+        category: selectedCategory.value == 'All' ? null : selectedCategory.value,
+      );
+
+      if (moreProducts.isEmpty || moreProducts.length < limit) {
+        hasMore.value = false;
+      }
+
+      productList.addAll(moreProducts);
+    } catch (e) {
+      skip -= limit; // Revert skip count if request fails
+      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+    } finally {
+      isLoadingMore.value = false;
     }
   }
 
@@ -62,7 +114,7 @@ class ShopController extends GetxController {
     try {
       isLoading(true);
       await _provider.createProduct(productData);
-      fetchProducts(category: selectedCategory.value == 'All' ? null : selectedCategory.value);
+      fetchProducts(category: selectedCategory.value == 'All' ? null : selectedCategory.value, isRefresh: true);
     } catch (e) {
       Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
       rethrow;
@@ -71,4 +123,3 @@ class ShopController extends GetxController {
     }
   }
 }
-

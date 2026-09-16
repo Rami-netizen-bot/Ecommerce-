@@ -10,7 +10,6 @@ class User(Base):
     username = Column(String, unique=True, index=True, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-
     orders = relationship("Order", back_populates="user")
 
 
@@ -23,13 +22,11 @@ class Product(Base):
     price = Column(Float, nullable=False)
     category = Column(String, nullable=False, index=True)
     image_url = Column(String, nullable=True)
-
     order_items = relationship("OrderItem", back_populates="product")
 
 
 class Order(Base):
     __tablename__ = "orders"
-
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     total_price = Column(Float, nullable=False)

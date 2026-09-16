@@ -15,6 +15,15 @@ class ShopView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ShopController controller = Get.find<ShopController>();
+    final ScrollController scrollController = ScrollController();
+
+    // Listen to scroll events to trigger pagination when reaching the bottom
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 200) {
+        controller.loadMoreProducts();
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -24,6 +33,7 @@ class ShopView extends StatelessWidget {
             icon: const Icon(Icons.refresh),
             onPressed: () => controller.fetchProducts(
               category: controller.selectedCategory.value,
+              isRefresh: true,
             ),
           ),
           IconButton(
@@ -104,14 +114,17 @@ class ShopView extends StatelessWidget {
             ],
             onBannerTap: (index) {},
           ),
-          
+
           // Dynamic Category Selector Chips with Smooth Selection Animation
           Obx(
             () => SizedBox(
               height: 60,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
                 itemCount: controller.categories.length,
                 itemBuilder: (context, index) {
                   final cat = controller.categories[index];
@@ -121,9 +134,13 @@ class ShopView extends StatelessWidget {
                     padding: const EdgeInsets.only(right: 8.0),
                     child: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 300),
-                      transitionBuilder: (Widget child, Animation<double> animation) {
-                        return ScaleTransition(scale: animation, child: child);
-                      },
+                      transitionBuilder:
+                          (Widget child, Animation<double> animation) {
+                            return ScaleTransition(
+                              scale: animation,
+                              child: child,
+                            );
+                          },
                       child: ChoiceChip(
                         key: ValueKey('${cat}_$isSelected'),
                         label: Text(cat),
@@ -137,7 +154,7 @@ class ShopView extends StatelessWidget {
             ),
           ),
 
-          // Product Grid View with Animated Transitions
+          // Product Grid View with Animated Transitions and Pagination Support
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {
@@ -148,100 +165,124 @@ class ShopView extends StatelessWidget {
                 return const Center(child: Text('No products found.'));
               }
 
-              return AnimatedSwitcher(
-                duration: const Duration(milliseconds: 400),
-                child: GridView.builder(
-                  key: ValueKey(controller.selectedCategory.value),
-                  padding: const EdgeInsets.all(12),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.75,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                  ),
-                  itemCount: controller.filteredProducts.length,
-                  itemBuilder: (context, index) {
-                    final product = controller.filteredProducts[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Get.to(() => ProductDetailView(), arguments: product);
-                      },
-                      child: Card(
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(12),
-                                  ),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(12),
-                                  ),
-                                  child: product.imageUrl != null &&
-                                          product.imageUrl!.isNotEmpty
-                                      ? Image.network(
-                                          product.imageUrl!,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (context, error, stackTrace) =>
-                                              const Center(
-                                            child: Icon(
-                                              Icons.shopping_bag,
-                                              size: 40,
-                                              color: Colors.grey,
+              return Column(
+                children: [
+                  Expanded(
+                    child: GridView.builder(
+                      controller:
+                          scrollController, // <-- Attached ScrollController here
+                      key: ValueKey(controller.selectedCategory.value),
+                      padding: const EdgeInsets.all(12),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.75,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                          ),
+                      itemCount: controller.filteredProducts.length,
+                      itemBuilder: (context, index) {
+                        final product = controller.filteredProducts[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Get.to(
+                              () => ProductDetailView(),
+                              arguments: product,
+                            );
+                          },
+                          child: Card(
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[200],
+                                      borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(12),
+                                      ),
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(12),
+                                      ),
+                                      child:
+                                          product.imageUrl != null &&
+                                              product.imageUrl!.isNotEmpty
+                                          ? Image.network(
+                                              product.imageUrl!,
+                                              fit: BoxFit.cover,
+                                              errorBuilder:
+                                                  (
+                                                    context,
+                                                    error,
+                                                    stackTrace,
+                                                  ) => const Center(
+                                                    child: Icon(
+                                                      Icons.shopping_bag,
+                                                      size: 40,
+                                                      color: Colors.grey,
+                                                    ),
+                                                  ),
+                                            )
+                                          : const Center(
+                                              child: Icon(
+                                                Icons.shopping_bag,
+                                                size: 40,
+                                                color: Colors.grey,
+                                              ),
                                             ),
-                                          ),
-                                        )
-                                      : const Center(
-                                          child: Icon(
-                                            Icons.shopping_bag,
-                                            size: 40,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    product.title,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                    ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        product.title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '\$${product.price.toStringAsFixed(2)}',
+                                        style: const TextStyle(
+                                          color: Colors.indigo,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '\$${product.price.toStringAsFixed(2)}',
-                                    style: const TextStyle(
-                                      color: Colors.indigo,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  // Loading indicator at the bottom when fetching more products
+                  Obx(
+                    () => controller.isLoadingMore.value
+                        ? const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8.0),
+                            child: Center(child: CircularProgressIndicator()),
+                          )
+                        : const SizedBox.shrink(),
+                  ),
+                ],
               );
             }),
           ),
