@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Admin — Reports</title>
+    <link rel="stylesheet" href="/static/style.css">
+    
+</head>
+<body>
+
+    <div class="admin-wrapper dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <h2 class="logo">Smart E-Commerce</h2>
+                <ul class="nav-menu">
+                    <li onclick="location.href='/dashboard.html'">Dashboard</li>
+                    <li onclick="location.href='/index.html'">Products</li>
+                    <li onclick="location.href='/payments.html'">Payments</li>
+                    <li onclick="location.href='/customers.html'">Customers</li>
+                    <li class="active">Reports</li>
+                    <li onclick="location.href='/settings.html'">Settings</li>
+                </ul>
+            </div>
+            <div class="sidebar-bottom">
+                <span class="logout">Log out</span>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <div>
+                    <h1>Reports</h1>
+                    <p class="header-sub">Sales trends and category performance.</p>
+                </div>
+                <div class="range-tabs" id="rangeTabs">
+                    <button class="active" data-range="7d">7 days</button>
+                    <button data-range="30d">30 days</button>
+                    <button data-range="90d">90 days</button>
+                </div>
+            </header>
+
+            <div class="panel-row">
+                <div class="panel-card">
+                    <h2>Sales trend</h2>
+                    <p class="panel-sub">Revenue over the selected period</p>
+                    <div class="chart-wrap"><canvas id="salesChart"></canvas></div>
+                </div>
+                <div class="panel-card">
+                    <h2>Category performance</h2>
+                    <p class="panel-sub">Share of revenue by category</p>
+                    <div class="chart-wrap"><canvas id="categoryChart"></canvas></div>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-header-row">
+                    <h2>Top products by price</h2>
+                    <span class="panel-sub" style="margin:0;">Live from your product catalog</span>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Price</th>
+                                <th>Category</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topProductsBody">
+                            <tr><td colspan="4" class="text-center">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+   <script src="/static/reports.js"></script>
+</body>
+</html>

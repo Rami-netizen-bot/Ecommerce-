@@ -55,9 +55,11 @@ Activate the virtual environment:
 Install dependencies and run the server:
 
 ```bash
-pip install fastapi uvicorn sqlalchemy pydantic
+pip install fastapi sqlalchemy uvicorn passlib bcrypt
 uvicorn main:app --reload
-```
+
+```python -m uvicorn main:app --reload
+
 
 * The API will be available at `http://127.0.0.1:8000`.
 * Automated Swagger documentation can be accessed at `http://127.0.0.1:8000/docs`.

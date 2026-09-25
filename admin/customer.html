@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Admin — Customers</title>
+    <link rel="stylesheet" href="/static/style.css">
+   
+</head>
+<body>
+
+    <div class="admin-wrapper dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <h2 class="logo">Smart E-Commerce</h2>
+                <ul class="nav-menu">
+                    <li onclick="location.href='/dashboard.html'">Dashboard</li>
+                    <li onclick="location.href='/index.html'">Products</li>
+                    <li onclick="location.href='/payments.html'">Payments</li>
+                    <li class="active">Customers</li>
+                    <li onclick="location.href='/reports.html'">Reports</li>
+                    <li onclick="location.href='/settings.html'">Settings</li>
+                </ul>
+            </div>
+            <div class="sidebar-bottom">
+                <span class="logout">Log out</span>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <div>
+                    <h1>Customers</h1>
+                    <p class="header-sub">See who's buying and how much they've spent.</p>
+                </div>
+                <div class="user-profile">
+                    <span>Admin Panel</span>
+                </div>
+            </header>
+
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total customers</div>
+                    <div class="stat-value" id="statTotalCustomers">—</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">New this month</div>
+                    <div class="stat-value" id="statNewCustomers">—</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Repeat customers</div>
+                    <div class="stat-value" id="statRepeatCustomers">—</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Avg. lifetime spend</div>
+                    <div class="stat-value" id="statAvgSpend">—</div>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-header-row">
+                    <h2>All customers</h2>
+                </div>
+                <div style="padding: 0 20px;">
+                    <div class="filter-bar">
+                        <input type="text" id="searchInput" placeholder="Search by name or email...">
+                        <select id="sortFilter">
+                            <option value="recent">Sort: Most recent</option>
+                            <option value="spend">Sort: Highest spend</option>
+                            <option value="orders">Sort: Most orders</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Orders</th>
+                                <th>Total spent</th>
+                                <th>Joined</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customersTableBody">
+                            <tr><td colspan="5" class="text-center">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+  <script src="/static/customers.js"></script>
+</body>
+</html>

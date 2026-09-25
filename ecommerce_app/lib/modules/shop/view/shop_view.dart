@@ -7,7 +7,8 @@ import 'package:ecommerce_app/modules/shop/view/card_view.dart';
 import 'package:ecommerce_app/modules/Widget/promo_banner.dart';
 import 'package:ecommerce_app/data/models/promoe_banner_model.dart';
 import 'package:ecommerce_app/modules/shop/view/order_history_view.dart';
-import 'package:ecommerce_app/modules/shop/view/add_product_view.dart';
+import 'package:ecommerce_app/modules/shop/view/login_view.dart';
+import 'account_view.dart';
 
 class ShopView extends StatelessWidget {
   const ShopView({Key? key}) : super(key: key);
@@ -40,6 +41,11 @@ class ShopView extends StatelessWidget {
             icon: const Icon(Icons.history),
             onPressed: () => Get.to(() => const OrderHistoryView()),
           ),
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () => Get.to(() => const AccountView()),
+          ),
+
           Stack(
             children: [
               IconButton(
@@ -288,10 +294,33 @@ class ShopView extends StatelessWidget {
           ),
         ],
       ),
+
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.indigo,
-        onPressed: () => Get.to(() => AddProductView()),
-        child: const Icon(Icons.add, color: Colors.white),
+        backgroundColor: Colors.blueAccent,
+        onPressed: () {
+          Get.defaultDialog(
+            title: "Log out",
+            middleText: "Are you sure you want to log out?",
+            textConfirm: "Yes",
+            textCancel: "Cancel",
+            confirmTextColor: Colors.white,
+            buttonColor: Colors.blueAccent,
+            onConfirm: () {
+              Get.back();
+              Get.snackbar(
+                "Logged Out",
+                "You have been successfully logged out.",
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.black87,
+                colorText: Colors.white,
+                duration: const Duration(seconds: 2),
+              );
+
+              Get.offAll(() => LoginView());
+            },
+          );
+        },
+        child: const Icon(Icons.logout, color: Colors.white),
       ),
     );
   }

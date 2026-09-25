@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Admin — Settings</title>
+    <link rel="stylesheet" href="/static/style.css">
+    
+</head>
+<body>
+
+    <div class="admin-wrapper dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <h2 class="logo">Smart E-Commerce</h2>
+                <ul class="nav-menu">
+                    <li onclick="location.href='/dashboard.html'">Dashboard</li>
+                    <li onclick="location.href='/index.html'">Products</li>
+                    <li onclick="location.href='/payments.html'">Payments</li>
+                    <li onclick="location.href='/customers.html'">Customers</li>
+                    <li onclick="location.href='/reports.html'">Reports</li>
+                    <li class="active">Settings</li>
+                </ul>
+            </div>
+            <div class="sidebar-bottom">
+                <span class="logout">Log out</span>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <div>
+                    <h1>Settings</h1>
+                    <p class="header-sub">Manage your store details, account, and notifications.</p>
+                </div>
+                <div class="user-profile">
+                    <span>Admin Panel</span>
+                </div>
+            </header>
+
+            <div class="settings-grid">
+                <div class="settings-card">
+                    <h2>Store details</h2>
+                    <p class="panel-sub">Shown to customers on the storefront and receipts.</p>
+                    <form id="storeForm">
+                        <div class="form-group">
+                            <label>Store name</label>
+                            <input type="text" id="storeName" value="Smart E-Commerce">
+                        </div>
+                        <div class="form-group">
+                            <label>Support email</label>
+                            <input type="email" id="storeEmail" value="support@smartecommerce.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Currency</label>
+                            <select id="storeCurrency">
+                                <option value="USD" selected>USD — US Dollar</option>
+                                <option value="KHR">KHR — Cambodian Riel</option>
+                                <option value="EUR">EUR — Euro</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-save">Save store details</button>
+                    </form>
+                </div>
+
+                <div class="settings-card">
+                    <h2>Admin account</h2>
+                    <p class="panel-sub">Your login credentials for this admin panel.</p>
+                    <form id="accountForm">
+                        <div class="form-group">
+                            <label>Admin email</label>
+                            <input type="email" id="adminEmail" value="admin@profitpulse.com">
+                        </div>
+                        <div class="form-group">
+                            <label>New password</label>
+                            <input type="password" id="adminPassword" placeholder="Leave blank to keep current password">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm new password</label>
+                            <input type="password" id="adminPasswordConfirm" placeholder="Confirm new password">
+                        </div>
+                        <button type="submit" class="btn-save">Update account</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <h2>Notifications</h2>
+                <p class="panel-sub">Choose what the admin team gets alerted about.</p>
+
+                <div class="toggle-row">
+                    <div>
+                        <div class="toggle-label">New order received</div>
+                        <div class="toggle-sub">Get notified every time a customer places an order</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-row">
+                    <div>
+                        <div class="toggle-label">Low stock warning</div>
+                        <div class="toggle-sub">Alert when a product's stock drops below 5 units</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-row">
+                    <div>
+                        <div class="toggle-label">Payment failed</div>
+                        <div class="toggle-sub">Alert when a customer's payment doesn't go through</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-row">
+                    <div>
+                        <div class="toggle-label">Weekly summary email</div>
+                        <div class="toggle-sub">A digest of sales, orders, and new customers every Monday</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/settings.js"></script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ecommerce_app/modules/shop/controllers/card_controller.dart';
+import 'package:ecommerce_app/modules/shop/view/payment_view.dart';
 
 class CartView extends StatelessWidget {
   const CartView({Key? key}) : super(key: key);
@@ -65,8 +66,17 @@ class CartView extends StatelessWidget {
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () =>
-                                cartController.removeFromCart(cartItem.product),
+                            onPressed: () {
+                              cartController.removeFromCart(cartItem.product);
+                              Get.snackbar(
+                                "Removed",
+                                "${cartItem.product.title} removed from cart",
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: Colors.red.withOpacity(0.1),
+                                colorText: Colors.red[800],
+                                duration: Duration(seconds: 2),
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -117,7 +127,19 @@ class CartView extends StatelessWidget {
                       () => ElevatedButton(
                         onPressed: cartController.isLoading.value
                             ? null
-                            : () => cartController.checkout(),
+                            : () {
+                                final amount = cartController.totalPrice;
+
+                                final dummyQr =
+                                    "00020101021230580016a0000006770101110113000685500150303KHM5303840540${amount.toInt()}5802KH5909Merchant6007PhnomPenh6304";
+                                Get.to(
+                                  () => PaymentView(
+                                    qrString: dummyQr,
+                                    amount: amount,
+                                  ),
+                                );
+                              },
+
                         child: cartController.isLoading.value
                             ? const SizedBox(
                                 width: 20,
